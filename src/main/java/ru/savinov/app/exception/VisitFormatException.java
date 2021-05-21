@@ -1,4 +1,4 @@
-package ru.savinov.app.exeption;
+package ru.savinov.app.exception;
 
 public class VisitFormatException extends RuntimeException {
 

@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor(staticName = "of")
-public class StatusResponseDTO {
+public class StatusResponseDto {
 
     private String status;
 

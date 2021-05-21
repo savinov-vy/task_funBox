@@ -3,8 +3,9 @@ package ru.savinov.app.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import ru.savinov.app.controller.dto.VisitContainerDTO;
+import ru.savinov.app.controller.dto.VisitContainerDto;
 import java.util.Date;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -12,10 +13,9 @@ public class VisitService {
 
     private final RedisTemplate redisTemplate;
 
-    public Boolean save(VisitContainerDTO containerDto) throws Exception {
+    public Boolean save(VisitContainerDto containerDTO) {
         long time = new Date().getTime();
-        String link = containerDto.getDomains();
-        Boolean status = redisTemplate.opsForZSet().add("LINKS", link, time);
-        return status;
+        Set<String> visits = containerDTO.getDomains();
+        return redisTemplate.opsForZSet().add("VISITS", visits, time);
     }
 }
