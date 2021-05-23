@@ -13,10 +13,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.savinov.app.controller.dto.DomainResponse;
 import ru.savinov.app.controller.dto.VisitContainerDto;
+import ru.savinov.app.controller.dto.VisitFilterDto;
 import ru.savinov.app.service.VisitService;
 import ru.savinov.test_helpers.config.AbstractWebMvcSpringBootTest;
+import ru.savinov.test_helpers.factories.FilterFactory;
 import ru.savinov.test_helpers.factories.visit.VisitContainerDtoFactory;
+import ru.savinov.test_helpers.factories.visit.VisitDtoFactory;
+
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -31,6 +37,8 @@ class VisitControllerTest extends AbstractWebMvcSpringBootTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private VisitFilterDto visitFilterDto;
+
     @MockBean
     private VisitService visitService;
 
@@ -39,6 +47,8 @@ class VisitControllerTest extends AbstractWebMvcSpringBootTest {
     @BeforeEach
     public void before() {
         visitContainerDto = VisitContainerDtoFactory.of();
+        visitFilterDto = FilterFactory.of();
+        when(visitService.getByFilter(visitFilterDto)).thenReturn(VisitDtoFactory.ofDomain());
         when(visitService.save(visitContainerDto)).thenReturn(Boolean.TRUE);
     }
 
@@ -61,5 +71,21 @@ class VisitControllerTest extends AbstractWebMvcSpringBootTest {
     public void saveVisitedLinks_whenNoBody_thenBadRequest() throws Exception {
         mockMvc.perform(post("/visited_links"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getVisitedDomains() throws Exception {
+        System.out.println(DomainResponse.of(visitService.getByFilter(visitFilterDto), "ok"));
+        ResultActions result = mockMvc.perform(
+                MockMvcRequestBuilders.get("/visited_domains")
+                        .param("from", String.valueOf(visitFilterDto.getFrom()))
+                        .param("to", String.valueOf(visitFilterDto.getTo()))
+                        .content(objectMapper.writeValueAsString(DomainResponse.of(visitService.getByFilter(visitFilterDto), "ok")))
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+        result
+                .andExpect(jsonPath("$.domains", hasSize(3)))
+                .andExpect(jsonPath("$.status", Matchers.equalTo("OK")))
+                .andExpect(status().isOk());
     }
 }

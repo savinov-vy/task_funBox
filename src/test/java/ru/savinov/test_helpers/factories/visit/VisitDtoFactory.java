@@ -16,8 +16,8 @@ public class VisitDtoFactory {
                 "https://stackoverflow.com/questions/11828270/how-to-exit-the-vim-editor");
     }
 
-    public static List<String> ofDomain() {
-        return List.of(
+    public static Set<String> ofDomain() {
+        return Set.of(
                 "ya.ru",
                 "funbox.ru",
                 "stackoverflow.com");
