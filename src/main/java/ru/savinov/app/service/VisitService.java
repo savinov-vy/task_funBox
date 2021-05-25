@@ -1,23 +1,25 @@
 package ru.savinov.app.service;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import ru.savinov.app.controller.dto.VisitContainerDto;
 import ru.savinov.app.controller.dto.VisitFilterDto;
 
-import java.util.Date;
+import java.time.Clock;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class VisitService {
+
+    private Clock clock;
 
     private final RedisTemplate redisTemplate;
 
     public Boolean save(VisitContainerDto containerDTO) {
-        long time = new Date().getTime();
+        long time = clock.instant().toEpochMilli();
         Set<String> visits = containerDTO.getDomains();
         return redisTemplate.opsForZSet().add("VISITS", visits, time);
     }
