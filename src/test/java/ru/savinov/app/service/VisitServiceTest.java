@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,16 +55,19 @@ public class VisitServiceTest {
 
     @Test
     void testSave() {
-        when(zSetOperations.add("VISITS", visits, fixedClock.instant().toEpochMilli())).thenReturn(true);
+        long fixedTime = fixedClock.instant().toEpochMilli();
+        String key = "VISITS";
+        when(zSetOperations.add(key, visits, fixedTime)).thenReturn(true);
         assertTrue(subject.save(containerDto));
+        verify(zSetOperations).add(key, visits, fixedTime);
     }
 
     @Test
     void testGetByFilter() {
         VisitFilterDto filter = FilterFactory.of();
-        Set<HashSet> collect = visits.stream().map(visit -> new HashSet(Arrays.asList(visit))).collect(Collectors.toSet());
+        Set<Set<String>> visitsActual = visits.stream().map(visit -> (Set<String>) new HashSet(Arrays.asList(visit))).collect(Collectors.toSet());
         when(zSetOperations.rangeByScore("VISITS", Double.valueOf(filter.getFrom()), Double.valueOf(filter.getTo())))
-                .thenReturn(collect);
+                .thenReturn(visitsActual);
 
         TreeSet<String> actualTree = new TreeSet<>(subject.getByFilter(filter));
         TreeSet<String> expectedTree = new TreeSet(visits);
