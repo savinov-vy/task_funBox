@@ -24,7 +24,7 @@ public class VisitController {
     private final VisitService visitService;
 
     @PostMapping(value = "/visited_links", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> saveVisitedLinks(@RequestBody VisitContainerDto visitContainerDTO) throws Exception {
+    public ResponseEntity<Object> saveVisitedLinks(@RequestBody VisitContainerDto visitContainerDTO){
         visitService.save(visitContainerDTO);
         return ResponseEntity.ok(StatusResponseDto.of("OK"));
     }
