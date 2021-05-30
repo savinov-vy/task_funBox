@@ -13,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.savinov.app.constants.Properties;
 import ru.savinov.app.controller.dto.DomainResponse;
 import ru.savinov.app.controller.dto.VisitContainerDto;
 import ru.savinov.app.controller.dto.VisitFilterDto;
@@ -45,13 +46,12 @@ class VisitControllerTest extends AbstractWebMvcSpringBootTest {
     private VisitContainerDto visitContainerDto;
 
     @BeforeEach
-    public void before() {
+    public void setUp() {
         visitContainerDto = VisitContainerDtoFactory.of();
         visitFilterDto = FilterFactory.of();
         when(visitService.getByFilter(visitFilterDto)).thenReturn(VisitDtoFactory.ofDomain());
         when(visitService.save(visitContainerDto)).thenReturn(Boolean.TRUE);
     }
-
 
     @Test
     void saveVisited_success() throws Exception {
@@ -62,7 +62,7 @@ class VisitControllerTest extends AbstractWebMvcSpringBootTest {
 
         );
         result
-                .andExpect(jsonPath("$.status", Matchers.equalTo("OK")))
+                .andExpect(jsonPath("$.status", Matchers.equalTo(Properties.STATUS_OK)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -75,17 +75,17 @@ class VisitControllerTest extends AbstractWebMvcSpringBootTest {
 
     @Test
     void getVisitedDomains() throws Exception {
-        System.out.println(DomainResponse.of(visitService.getByFilter(visitFilterDto), "ok"));
+        System.out.println(DomainResponse.of(visitService.getByFilter(visitFilterDto), Properties.STATUS_OK));
         ResultActions result = mockMvc.perform(
                 MockMvcRequestBuilders.get("/visited_domains")
                         .param("from", String.valueOf(visitFilterDto.getFrom()))
                         .param("to", String.valueOf(visitFilterDto.getTo()))
-                        .content(objectMapper.writeValueAsString(DomainResponse.of(visitService.getByFilter(visitFilterDto), "ok")))
+                        .content(objectMapper.writeValueAsString(DomainResponse.of(visitService.getByFilter(visitFilterDto), Properties.STATUS_OK)))
                         .contentType(MediaType.APPLICATION_JSON)
         );
         result
                 .andExpect(jsonPath("$.domains", hasSize(3)))
-                .andExpect(jsonPath("$.status", Matchers.equalTo("OK")))
+                .andExpect(jsonPath("$.status", Matchers.equalTo(Properties.STATUS_OK)))
                 .andExpect(status().isOk());
     }
 }

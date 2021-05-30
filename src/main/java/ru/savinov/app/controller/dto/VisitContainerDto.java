@@ -1,6 +1,5 @@
 package ru.savinov.app.controller.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,10 +15,9 @@ import java.util.stream.Collectors;
 public class VisitContainerDto {
 
     @NotBlank
-    @JsonProperty("links")
-    private List<VisitDto> visits;
+    private List<VisitDto> links;
 
     public Set<String> getDomains() {
-        return visits.stream().map(VisitDto::getDomain).collect(Collectors.toSet());
+        return links.stream().map(VisitDto::getDomain).collect(Collectors.toSet());
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.savinov.app.constants.Properties;
 import ru.savinov.app.controller.dto.StatusResponseDto;
 
 import java.io.PrintWriter;
@@ -16,14 +17,14 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler
     public ResponseEntity handleDefault(Exception e) {
         log.warn(getStackTrace(e));
-        return new ResponseEntity(StatusResponseDto.of("FAILURE"), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(StatusResponseDto.of(Properties.STATUS_FAILURE), HttpStatus.BAD_REQUEST);
     }
 
 
     @ExceptionHandler(VisitFormatException.class)
     public ResponseEntity handleDefault(VisitFormatException e) {
         log.warn(getStackTrace(e));
-        return new ResponseEntity(StatusResponseDto.of("FAILURE"), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(StatusResponseDto.of(Properties.STATUS_FAILURE), HttpStatus.BAD_REQUEST);
     }
 
     private static String getStackTrace(final Throwable throwable) {

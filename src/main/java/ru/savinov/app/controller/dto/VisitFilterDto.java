@@ -16,4 +16,12 @@ public class VisitFilterDto {
 
     @NotNull
     private Long to;
+
+    public Long getTo() {
+        return to>=from ? to : from;
+    }
+
+    public Long getFrom() {
+        return from<=to ? from : to;
+    }
 }

@@ -3,6 +3,7 @@ package ru.savinov.app.controller.dto;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.savinov.app.constants.Properties;
 import ru.savinov.app.exception.VisitFormatException;
 
 import java.net.MalformedURLException;
@@ -35,6 +36,6 @@ public class VisitDto {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        throw new VisitFormatException("this visit format is not provided");
+        throw new VisitFormatException(Properties.VISIT_FORMAT_EXEPTION);
     }
 }

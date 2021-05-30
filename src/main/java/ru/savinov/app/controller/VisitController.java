@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.savinov.app.constants.Properties;
 import ru.savinov.app.controller.dto.DomainResponse;
 import ru.savinov.app.controller.dto.StatusResponseDto;
 import ru.savinov.app.controller.dto.VisitContainerDto;
@@ -32,6 +33,6 @@ public class VisitController {
     @GetMapping(value = "/visited_domains", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getVisitedDomains(@Valid VisitFilterDto filterDto) {
         Set<String> result = visitService.getByFilter(filterDto);
-        return ResponseEntity.ok(DomainResponse.of(result, "OK"));
+        return ResponseEntity.ok(DomainResponse.of(result, Properties.STATUS_OK));
     }
 }

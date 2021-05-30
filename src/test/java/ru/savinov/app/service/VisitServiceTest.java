@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import ru.savinov.app.constants.Properties;
 import ru.savinov.app.controller.dto.VisitContainerDto;
 import ru.savinov.app.controller.dto.VisitFilterDto;
 import ru.savinov.test_helpers.factories.FilterFactory;
@@ -41,9 +42,8 @@ public class VisitServiceTest {
 
     @BeforeEach
     void setUp() {
-        String now = "2021-05-30T20:00:00Z";
-        ZoneId irkutskTimeZoneId = ZoneId.of("Asia/Irkutsk");
-        fixedClock = Clock.fixed(Instant.parse(now), irkutskTimeZoneId);
+        ZoneId timeZoneId = ZoneId.of(Properties.TIME_ZONE_ID);
+        fixedClock = Clock.fixed(Instant.parse(Properties.DATE_INTERNAL_FILTER), timeZoneId);
         filter = FilterFactory.of();
 
         subject = new VisitService(fixedClock, redisTemplate);
@@ -55,18 +55,17 @@ public class VisitServiceTest {
 
     @Test
     void testSave() {
-        long fixedTime = fixedClock.instant().toEpochMilli();
-        String key = "VISITS";
-        when(zSetOperations.add(key, visits, fixedTime)).thenReturn(true);
+        long fixedTime = fixedClock.instant().getEpochSecond();
+        when(zSetOperations.add(Properties.SAVE_BY_KEY, visits, fixedTime)).thenReturn(true);
         assertTrue(subject.save(containerDto));
-        verify(zSetOperations).add(key, visits, fixedTime);
+        verify(zSetOperations).add(Properties.SAVE_BY_KEY, visits, fixedTime);
     }
 
     @Test
     void testGetByFilter() {
         VisitFilterDto filter = FilterFactory.of();
         Set<Set<String>> visitsActual = visits.stream().map(visit -> (Set<String>) new HashSet(Arrays.asList(visit))).collect(Collectors.toSet());
-        when(zSetOperations.rangeByScore("VISITS", Double.valueOf(filter.getFrom()), Double.valueOf(filter.getTo())))
+        when(zSetOperations.rangeByScore(Properties.SAVE_BY_KEY, Double.valueOf(filter.getFrom()), Double.valueOf(filter.getTo())))
                 .thenReturn(visitsActual);
 
         TreeSet<String> actualTree = new TreeSet<>(subject.getByFilter(filter));
